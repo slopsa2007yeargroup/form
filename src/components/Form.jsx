@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import logo from "../assets/Done.svg";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc,setDoc ,doc  } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 function Form() {
@@ -12,48 +11,42 @@ function Form() {
     surname: '',
     maidenName: '',
     houseDorm: '',
+    program: '',
     class: '',
     currentOccupation: ''
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [classes, setClasses] = useState([]);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB9bt7BuGgsGjTCDul1741ISikWW4eG6yE",
-    authDomain: "st-louis-app.firebaseapp.com",
-    databaseURL: "https://st-louis-app-default-rtdb.firebaseio.com",
-    projectId: "st-louis-app",
-    storageBucket: "st-louis-app.firebasestorage.app",
-    messagingSenderId: "688310246443",
-    appId: "1:688310246443:web:a45feec486130523e29e6e"
+  const dorms = ['Fatima', 'St. Josephs', 'St. Luanga', 'St. Martins', 'Mary Joannes'];
+  const programs = ['Science', 'General Arts', 'Visual Arts', 'Home Economics'];
+  const programClasses = {
+    'Science': ['Science A', 'Science B', 'Science C'],
+    'General Arts': ['AG', 'AS', 'AL', 'AM', 'AF'],
+    'Visual Arts': ['AV'],
+    'Home Economics': ['BV']
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  useEffect(() => {
+    if (formData.program) {
+      setClasses(programClasses[formData.program]);
+    } else {
+      setClasses([]);
+    }
+  }, [formData.program]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    let fieldName;
-
-    switch (id) {
-      case 'firstName': fieldName = 'firstName'; break;
-      case 'surname': fieldName = 'surname'; break;
-      case 'maidenName': fieldName = 'maidenName'; break;
-      case 'houseDorm': fieldName = 'houseDorm'; break;
-      case 'class': fieldName = 'class'; break;
-      case 'currentOccupation': fieldName = 'currentOccupation'; break;
-      default: fieldName = id;
-    }
-
     setFormData({
       ...formData,
-      [fieldName]: value
+      [id]: value
     });
 
-    if (errors[fieldName]) {
+    if (errors[id]) {
       setErrors({
         ...errors,
-        [fieldName]: null
+        [id]: null
       });
     }
   };
@@ -64,6 +57,7 @@ function Form() {
     if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
     if (!formData.surname.trim()) newErrors.surname = "Surname is required";
     if (!formData.houseDorm.trim()) newErrors.houseDorm = "House/Dorm is required";
+    if (!formData.program.trim()) newErrors.program = "Program is required";
     if (!formData.class.trim()) newErrors.class = "Class is required";
     if (!formData.currentOccupation.trim()) newErrors.currentOccupation = "Current Occupation is required";
 
@@ -85,6 +79,7 @@ function Form() {
           surname: '',
           maidenName: '',
           houseDorm: '',
+          program: '',
           class: '',
           currentOccupation: ''
         });
@@ -97,54 +92,21 @@ function Form() {
     }
   };
 
-
-
-
-
-
-/*
-const registerUser = async (email, password, e) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Save user data in Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      password:password,
-      createdAt: new Date(),
-    });
-
-    console.log("User saved to Firestore!");
-  } catch (error) {
-    console.error("Error registering user:", error);
-  }
-};
-
-
-useEffect(()=>{
-
-  registerUser("ackahkelvin455@gmail.com","Jailbreak40")
-},[])
-
-*/
-
   return (
     <div className='flex max-sm:mt-72 max-md:mt-64 mt-64 max-xs:mt-[500px] justify-center flex-col w-full items-center'>
       {done ? (
         <div className='g:w-[50%] md:w-[60%] sm:w-[75%] w-[90%] bg-white rounded-md border  py-10 bg-opacity-80  '>
-        <div className='flex justify-center items-center flex-col'>
-          <img className='h-72' src={logo} alt="Success" />
-          <p className='text-xl font-semibold text-slate-700 mt-5'>Thank you for your response</p>
-          <button onClick={() => setDone(false)} className='bg-green-700 px-5 py-3 flex flex-row gap-2 text-white rounded-md mt-5'>
-            <svg className='h-7' viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
-              <path fill="#ffffff" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"></path>
-              <path fill="#ffffff" d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"></path>
-            </svg>
-            Back to form
-          </button>
-        </div>
-
+          <div className='flex justify-center items-center flex-col'>
+            <img className='h-72' src={logo} alt="Success" />
+            <p className='text-xl font-semibold text-slate-700 mt-5'>Thank you for your response</p>
+            <button onClick={() => setDone(false)} className='bg-green-700 px-5 py-3 flex flex-row gap-2 text-white rounded-md mt-5'>
+              <svg className='h-7' viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                <path fill="#ffffff" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"></path>
+                <path fill="#ffffff" d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"></path>
+              </svg>
+              Back to form
+            </button>
+          </div>
         </div>
       ) : (
         <div className='text-slate-800 flex bg-white bg-opacity-70 flex-col border-slate-200 shadow rounded-md border py-4 lg:w-[50%] md:w-[60%] sm:w-[75%] w-[90%]'>
@@ -210,14 +172,17 @@ useEffect(()=>{
             {/* House/Dorm */}
             <div className='mb-5'>
               <div className="relative">
-                <input
-                  type="text"
+                <select
                   id="houseDorm"
                   className={`block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 ${errors.houseDorm ? 'border-red-500' : 'border-gray-300'} appearance-none dark:focus:border-green-700 focus:outline-none focus:ring-0 focus:border-green-800 peer`}
-                  placeholder=" "
                   value={formData.houseDorm}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">Select Dorm</option>
+                  {dorms.map((dorm, index) => (
+                    <option key={index} value={dorm}>{dorm}</option>
+                  ))}
+                </select>
                 <label htmlFor="houseDorm" className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-110 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                   House/Dorm <span className="text-red-600">*</span>
                 </label>
@@ -225,17 +190,42 @@ useEffect(()=>{
               {errors.houseDorm && <p className="text-red-500 text-xs mt-1">{errors.houseDorm}</p>}
             </div>
 
+            {/* Program */}
+            <div className='mb-5'>
+              <div className="relative">
+                <select
+                  id="program"
+                  className={`block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 ${errors.program ? 'border-red-500' : 'border-gray-300'} appearance-none dark:focus:border-green-700 focus:outline-none focus:ring-0 focus:border-green-800 peer`}
+                  value={formData.program}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Program</option>
+                  {programs.map((program, index) => (
+                    <option key={index} value={program}>{program}</option>
+                  ))}
+                </select>
+                <label htmlFor="program" className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-110 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                  Program <span className="text-red-600">*</span>
+                </label>
+              </div>
+              {errors.program && <p className="text-red-500 text-xs mt-1">{errors.program}</p>}
+            </div>
+
             {/* Class */}
             <div className='mb-5'>
               <div className="relative">
-                <input
-                  type="text"
+                <select
                   id="class"
                   className={`block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 ${errors.class ? 'border-red-500' : 'border-gray-300'} appearance-none dark:focus:border-green-700 focus:outline-none focus:ring-0 focus:border-green-800 peer`}
-                  placeholder=" "
                   value={formData.class}
                   onChange={handleChange}
-                />
+                  disabled={!formData.program}
+                >
+                  <option value="">Select Class</option>
+                  {classes.map((cls, index) => (
+                    <option key={index} value={cls}>{cls}</option>
+                  ))}
+                </select>
                 <label htmlFor="class" className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-110 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                   Class <span className="text-red-600">*</span>
                 </label>
