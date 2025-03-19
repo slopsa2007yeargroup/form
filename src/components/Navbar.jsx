@@ -11,22 +11,22 @@ function Navbar() {
   return (
     <div className='w-full z-50  bg-white  fixed top-0 flex flex-row justify-between items-center border-b border-slate-300 drop-shadow py-3 px-10'>
       <div className='flex flex-row items-center gap-2'>
-        <img src={logo} className='h-16' alt="logo" />
+        <img src={logo} className='h-8' alt="logo" />
         <span className='text-xl text-slate-600 max-sm:hidden  '>St Louis Senior High School</span>
       </div>
 
       <div className='h-full flex items-center gap-5 justify-center'>
         <Link 
           to="/" 
-          className={`text-xl max-sm:text-sm  h-full cursor-pointer ${
+          className={` max-sm:text-sm  h-full cursor-pointer text-normal  font-semibold ${
             !isAdminRoute ? 'border-b-2 border-green-700 text-green-600' : 'text-green-600'
           }`}
         >
-          Fill Forms
+          Register 
         </Link>
         <Link 
           to="/admin-login" 
-          className={`text-xl h-full  max-sm:text-sm  cursor-pointer ${
+          className={` h-full  max-sm:text-sm  cursor-pointer  text-normal  font-semibold ${
             isAdminRoute ? 'border-b-2 border-green-700 text-green-600' : 'text-green-600'
           }`}
         >

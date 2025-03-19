@@ -10,6 +10,7 @@ function Form() {
     firstName: '',
     surname: '',
     maidenName: '',
+    fullName: '', // Add this line
     houseDorm: '',
     program: '',
     class: '',
@@ -71,6 +72,7 @@ function Form() {
         setIsSubmitting(true);
         const docRef = await addDoc(collection(db, "formResponses"), {
           ...formData,
+          fullName: formData.fullName, // Ensure this line is included
           timestamp: new Date()
         });
         console.log("Document written with ID: ", docRef.id);
@@ -78,6 +80,7 @@ function Form() {
           firstName: '',
           surname: '',
           maidenName: '',
+          fullName: '', // Reset this field
           houseDorm: '',
           program: '',
           class: '',
@@ -93,7 +96,7 @@ function Form() {
   };
 
   return (
-    <div className='flex max-sm:mt-72 max-md:mt-64 mt-64 max-xs:mt-[500px] justify-center flex-col w-full items-center'>
+    <div className='flex max-sm:mt-96 max-md:mt-64 md:mt-48 lg:mt-48 max-xs:mt-[560px] justify-center flex-col w-full items-center'>
       {done ? (
         <div className='g:w-[50%] md:w-[60%] sm:w-[75%] w-[90%] bg-white rounded-md border  py-10 bg-opacity-80  '>
           <div className='flex justify-center items-center flex-col'>
@@ -115,8 +118,9 @@ function Form() {
           </div>
 
           <div className='w-full py-5 px-4'>
-            {/* First Name */}
-            <div className='mb-5'>
+
+          <div className='flex flex-col  justify-between gap-4 sm:flex-row '>
+          <div className='mb-5 w-full '>
               <div className="relative">
                 <input
                   type="text"
@@ -134,7 +138,7 @@ function Form() {
             </div>
 
             {/* Surname */}
-            <div className='mb-5'>
+            <div className='mb-5 w-full'>
               <div className="relative">
                 <input
                   type="text"
@@ -151,6 +155,9 @@ function Form() {
               {errors.surname && <p className="text-red-500 text-xs mt-1">{errors.surname}</p>}
             </div>
 
+          </div>
+            {/* First Name */}
+          
             {/* Maiden Name */}
             <div className='mb-5'>
               <div className="relative">
@@ -166,7 +173,22 @@ function Form() {
                   Maiden name
                 </label>
               </div>
-              <p id="helper-text-explanation" className="mt-1 text-sm text-gray-700">Full name before marriage if applicable</p>
+            </div>
+
+            <div className='mb-5'>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="fullName"
+                  className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none dark:focus:border-green-700 focus:outline-none focus:ring-0 focus:border-green-800 peer"
+                  placeholder=" "
+                  value={formData.fullName}
+                  onChange={handleChange}
+                />
+                <label htmlFor="fullName" className="absolute text-sm text-gray-600 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-110 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                  Full Name (Before marriage)
+                </label>
+              </div>
             </div>
 
             {/* House/Dorm */}
@@ -190,8 +212,10 @@ function Form() {
               {errors.houseDorm && <p className="text-red-500 text-xs mt-1">{errors.houseDorm}</p>}
             </div>
 
+            <div className='flex flex-col  justify-between gap-4 sm:flex-row '>
+
             {/* Program */}
-            <div className='mb-5'>
+            <div className='mb-5 w-full'>
               <div className="relative">
                 <select
                   id="program"
@@ -212,7 +236,7 @@ function Form() {
             </div>
 
             {/* Class */}
-            <div className='mb-5'>
+            <div className='mb-5 w-full'>
               <div className="relative">
                 <select
                   id="class"
@@ -231,6 +255,7 @@ function Form() {
                 </label>
               </div>
               {errors.class && <p className="text-red-500 text-xs mt-1">{errors.class}</p>}
+            </div>
             </div>
 
             {/* Current Occupation */}

@@ -194,6 +194,7 @@ const handleChangePassword = async () => {
       return (
         response.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         response.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        response.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || // Add this line
         response.houseDorm.toLowerCase().includes(searchTerm.toLowerCase()) ||
         response.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
         response.currentOccupation.toLowerCase().includes(searchTerm.toLowerCase())
@@ -247,6 +248,16 @@ const handleChangePassword = async () => {
       ),
     },
     {
+      name: <span className='text-base font-semibold text-slate-500'>Full Name (Before Marriage)</span>,
+      selector: row => `${row.fullName ? row.fullName : ""}`,
+      sortable: true,
+      cell: row => (
+        <div>
+          <div className="text-base font-medium text-gray-700">{row.fullName ? row.fullName : ""}</div>
+        </div>
+      ),
+    },
+    {
       name: <span className='text-base font-semibold text-slate-500'>House/Dorm</span>,
       selector: row => <span className='text-base text-gray-700'>{row.houseDorm}</span>,
       sortable: true,
@@ -280,7 +291,6 @@ const handleChangePassword = async () => {
       allowOverflow: true,
     },
   ];
-
   if (!user) {
     return <div className="text-center py-10">Redirecting to login...</div>;
   }
@@ -292,48 +302,35 @@ const exportToExcel = () => {
   const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
   
-  // Prepare data for export - only include needed fields
   const exportData = filteredData.map(item => ({
     'First Name': item.firstName || '',
     'Surname': item.surname || '',
     'Maiden Name': item.maidenName || '',
+    'Full Name (Before Marriage)': item.fullName || '', // Add this line
     'House/Dorm': item.houseDorm || '',
     'Class': item.class || '',
     'Occupation': item.currentOccupation || '',
     'Submitted': item.timestamp || ''
   }));
   
-  // Create a worksheet
   const ws = utils.json_to_sheet(exportData);
-  // Create a workbook
   const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-  // Convert to array buffer
   const excelBuffer = write(wb, { bookType: 'xlsx', type: 'array' });
-  // Create a Blob
   const data = new Blob([excelBuffer], { type: fileType });
   
-  // Create link and download
   const url = window.URL.createObjectURL(data);
   const link = document.createElement('a');
   link.href = url;
   link.download = `form_responses${fileExtension}`;
   link.click();
 };
-
 // Fixed exportToPDF function
 
 const exportToPDF = () => {
-  // Create new jsPDF instance
   const doc = new jsPDF();
   
-  // Make sure jspdf-autotable is properly imported and initialized
-  // If you have 'import 'jspdf-autotable'' at the top of your file,
-  // the autoTable method should be available on the jsPDF instance
-  
-  // Add title
   doc.text('Form Responses', 14, 15);
   
-  // Manually create table without autotable plugin
   const tableData = [];
   
   // Add header row
@@ -341,6 +338,7 @@ const exportToPDF = () => {
     'First Name', 
     'Surname', 
     'Maiden Name', 
+    'Full Name (Before Marriage)', // Add this line
     'House/Dorm', 
     'Class', 
     'Occupation', 
@@ -353,6 +351,7 @@ const exportToPDF = () => {
       item.firstName || '',
       item.surname || '',
       item.maidenName || '',
+      item.fullName || '', // Add this line
       item.houseDorm || '',
       item.class || '',
       item.currentOccupation || '',
@@ -360,9 +359,7 @@ const exportToPDF = () => {
     ]);
   });
   
-  // Check if autoTable is available
   if (typeof doc.autoTable === 'function') {
-    // Use autoTable if available
     doc.autoTable({
       head: [tableData[0]],
       body: tableData.slice(1),
@@ -372,7 +369,6 @@ const exportToPDF = () => {
       headStyles: { fillColor: [33, 150, 83] }
     });
   } else {
-    // Fallback to basic table rendering without autoTable
     console.warn('autoTable not available, using basic table rendering');
     
     const startY = 25;
@@ -380,25 +376,21 @@ const exportToPDF = () => {
     const colWidth = 25;
     const rowHeight = 10;
     
-    // Set small font for headers
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     
-    // Draw headers
     tableData[0].forEach((header, i) => {
       doc.text(header, 10 + (i * colWidth), startY);
     });
     
-    // Set normal font for data
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     
-    // Draw data rows (limit to 30 records to avoid issues)
     const maxRows = Math.min(tableData.length - 1, 30);
     for (let row = 0; row < maxRows; row++) {
       for (let col = 0; col < tableData[0].length; col++) {
         doc.text(
-          String(tableData[row + 1][col]).substring(0, 10), // Limit text length
+          String(tableData[row + 1][col]).substring(0, 10),
           10 + (col * colWidth),
           startY + ((row + 1) * rowHeight)
         );
@@ -410,7 +402,6 @@ const exportToPDF = () => {
     }
   }
   
-  // Save the PDF
   doc.save('form_responses.pdf');
 };
   return (

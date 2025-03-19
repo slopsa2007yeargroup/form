@@ -39,7 +39,14 @@ function ResponseDetail() {
             <p className="text-sm text-slate-500">Maiden Name</p>
             <p className="text-base font-medium text-gray-700">{response.maidenName || "N/A"}</p>
           </div>
+
           <div>
+            <p className="text-sm text-slate-500">Full Name(Before Marriage)</p>
+            <p className="text-base font-medium text-gray-700">{response.fullName|| "N/A"}</p>
+          </div>
+          <div>
+          
+          
             <p className="text-sm text-slate-500">House/Dorm</p>
             <p className="text-base font-medium text-gray-700">{response.houseDorm}</p>
           </div>
